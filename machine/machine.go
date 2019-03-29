@@ -27,20 +27,24 @@ func (fsm *finiteStateMachine) IsCanHandle(input string) bool {
 func determinateRules(rules []transitionRule) []transitionRule {
 	badRules := make([]transitionRule, 0, len(rules))
 	newRules := make([]transitionRule, 0, len(rules))
+	rulesBuffer := make([]transitionRule, 0, len(rules))
 	for {
 		badRulesIndices := selectBadRules(rules)
 		if badRulesIndices == nil || len(badRulesIndices) == 0 {
 			break
 		}
 		badRules = badRules[:0]
+		rulesBuffer = rulesBuffer[:0]
 		for i, j := 0, 0; i < len(rules); i++ {
-			badIndex := badRulesIndices[j]
-			if i == badIndex {
-				badRules = append(badRules, rules[badIndex])
+			if i != badRulesIndices[j] {
+				rulesBuffer = append(rulesBuffer, rules[i])
+			} else {
+				badRules = append(badRules, rules[i])
 				j++
-
 			}
 		}
+		rules = rulesBuffer
+
 	}
 }
 
@@ -61,10 +65,6 @@ func selectBadRules(rules []transitionRule) []int {
 	return nil
 }
 
-//func separateArrays([]int wholeArray, []int indices) ([]int itemsWithIndices, []int other) {
-//
-//}
+func createDeterministicRules(rules []transitionRule) []transitionRule {
 
-// func newFiniteStateMachine(rules []transitionRule) *finiteStateMachine {
-
-// }
+}
