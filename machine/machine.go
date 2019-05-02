@@ -79,14 +79,15 @@ func determinateBadRules(badRules, otherRules []transitionRule) []transitionRule
 	for _, rule := range otherRules {
 		if !isBadRuleNextState(rule.beginState, badRules) {
 			newRules = append(newRules, rule)
-			continue
+		} else {
+			newRules = append(newRules, transitionRule{
+				beginState: newState,
+				symbol:     rule.symbol,
+				nextState:  rule.nextState,
+			})
 		}
-		newRules = append(newRules, transitionRule{
-			beginState:
-		})
-
 	}
-
+	return newRules
 }
 
 func isBadRuleNextState(state int, badRules []transitionRule) bool {
