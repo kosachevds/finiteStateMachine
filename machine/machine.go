@@ -71,6 +71,14 @@ func determinateBadRules(badRules, otherRules []transitionRule) []transitionRule
 
 }
 
+func getEndStates(rules []transitionRule) []int {
+	states := make([]int, 0, cap(rules))
+	for _, rule := range rules {
+		states = appendIntWithoutRepeats(states, rule.nextState)
+	}
+	return states
+}
+
 func appendIntWithoutRepeats(buffer []int, newItem int) []int {
 	for presentItem := range buffer {
 		if presentItem == newItem {
