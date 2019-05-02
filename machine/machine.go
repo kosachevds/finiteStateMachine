@@ -71,6 +71,16 @@ func determinateBadRules(badRules, otherRules []transitionRule) []transitionRule
 
 }
 
+func uniteStates(states []int) int {
+	// TODO: remade with count of states
+	newState := 0
+	for _, state := range states {
+		newState *= 10
+		newState += state
+	}
+	return newState
+}
+
 func getEndStates(rules []transitionRule) []int {
 	states := make([]int, 0, cap(rules))
 	for _, rule := range rules {
