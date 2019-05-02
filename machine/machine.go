@@ -14,6 +14,13 @@ type finiteStateMachine struct {
 }
 
 func ReadFromFile(filename string) (*finiteStateMachine, error) {
+	rules, err := readRules(filename)
+	if err != nil {
+		return nil, err
+	}
+	oldLen := len(rules)
+	rules = determinateRules(rules)
+	isDeterministic := oldLen == len(rules)
 
 }
 
