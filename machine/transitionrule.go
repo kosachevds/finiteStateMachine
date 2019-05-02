@@ -57,11 +57,11 @@ func parseTransitionRule(rule string, stateCodes *stateCodesMap) (transitionRule
 	}, nil
 }
 
-func readRules(filename string) []transitionRule {
+func readRules(filename string) ([]transitionRule, error) {
 	file, err := os.Open(filename)
 	defer file.Close()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	var rules []transitionRule
 	scanner := bufio.NewScanner(file)
@@ -74,12 +74,12 @@ func readRules(filename string) []transitionRule {
 		}
 		newRule, err := parseTransitionRule(line, stateCodes)
 		if err != nil {
-			return nil
+			return nil, err
 		}
 		rules = append(rules, newRule)
 	}
 	if err := scanner.Err(); err != nil {
-		return nil
+		return nil, scanner.Err()
 	}
-	return rules
+	return rules, nil
 }
