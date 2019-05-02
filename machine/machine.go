@@ -77,17 +77,21 @@ func determinateBadRules(badRules, otherRules []transitionRule) []transitionRule
 	newRules = append(newRules, uniteBadRules(badRules))
 	newState := newRules[0].nextState
 	for _, rule := range otherRules {
-		if !isBadRuleBegin(rule.beginState, badRules) {
+		if !isBadRuleNextState(rule.beginState, badRules) {
+			newRules = append(newRules, rule)
 			continue
 		}
+		newRules = append(newRules, transitionRule{
+			beginState:
+		})
 
 	}
 
 }
 
-func isBadRuleBegin(state int, badRules []transitionRule) bool {
+func isBadRuleNextState(state int, badRules []transitionRule) bool {
 	for _, badRule := range badRules {
-		if badRule.beginState == state {
+		if badRule.nextState == state {
 			return true
 		}
 	}
