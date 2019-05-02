@@ -17,10 +17,6 @@ func ReadFromFile(filename string) (*finiteStateMachine, error) {
 
 }
 
-func (fsm *finiteStateMachine) IsDeterministic() bool {
-	return fsm.isDeterministic
-}
-
 func (fsm *finiteStateMachine) IsCanHandle(input string) bool {
 
 }
