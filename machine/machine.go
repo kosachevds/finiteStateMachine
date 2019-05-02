@@ -70,3 +70,12 @@ func findBadRules(rules []transitionRule) []int {
 func determinateBadRules(badRules, otherRules []transitionRule) []transitionRule {
 
 }
+
+func appendIntWithoutRepeats(buffer []int, newItem int) []int {
+	for presentItem := range buffer {
+		if presentItem == newItem {
+			return buffer
+		}
+	}
+	return append(buffer, newItem)
+}
