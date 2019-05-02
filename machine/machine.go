@@ -1,5 +1,7 @@
 package machine
 
+import "sort"
+
 const (
 	comma      = ','
 	equalsSign = '='
@@ -67,18 +69,41 @@ func findBadRules(rules []transitionRule) []int {
 	return nil
 }
 
+// TODO badRules as struct {begin, symbol, ends}
 func determinateBadRules(badRules, otherRules []transitionRule) []transitionRule {
+	oldStates := getEndStates(badRules)
+	sort.Ints(oldStates)
+	newRules := make([]transitionRule, 0, len(badRules)+len(otherRules))
+	newRules = append(newRules, uniteBadRules(badRules))
+	newState := newRules[0].nextState
+	for _, rule := range otherRules {
+		if !isBadRuleBegin(rule.beginState, badRules) {
+			continue
+		}
+
+	}
 
 }
 
-func uniteStates(states []int) int {
-	// TODO: remade with count of states
-	newState := 0
-	for _, state := range states {
-		newState *= 10
-		newState += state
+func isBadRuleBegin(state int, badRules []transitionRule) bool {
+	for _, badRule := range badRules {
+		if badRule.beginState == state {
+			return true
+		}
 	}
-	return newState
+	return false
+}
+
+func uniteBadRules(rules []transitionRule) transitionRule {
+	// TODO: remade with count of states
+	statesToUnite := getEndStates(rules)
+	sort.Ints(statesToUnite)
+	newState := 0
+	for _, oldState := range statesToUnite {
+		newState *= 10
+		newState += oldState
+	}
+	return transitionRule{rules[0].beginState, rules[0].symbol, newState}
 }
 
 func getEndStates(rules []transitionRule) []int {
