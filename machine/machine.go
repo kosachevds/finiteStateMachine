@@ -1,10 +1,9 @@
 package machine
 
 const (
-	comma          = ','
-	equalsSign     = '='
-	finalSign      = '#'
-	startStateName = "q0"
+	comma      = ','
+	equalsSign = '='
+	finalSign  = '#'
 )
 
 type finiteStateMachine struct {
@@ -13,7 +12,7 @@ type finiteStateMachine struct {
 }
 
 func ReadFromFile(filename string) (*finiteStateMachine, error) {
-	return &finiteStateMachine{}, nil
+
 }
 
 func (fsm *finiteStateMachine) IsDeterministic() bool {
@@ -21,34 +20,37 @@ func (fsm *finiteStateMachine) IsDeterministic() bool {
 }
 
 func (fsm *finiteStateMachine) IsCanHandle(input string) bool {
-	return true
+
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func determinateRules(rules []transitionRule) []transitionRule {
 	badRules := make([]transitionRule, 0, len(rules))
-	newRules := make([]transitionRule, 0, len(rules))
-	rulesBuffer := make([]transitionRule, 0, len(rules))
+	otherRules := make([]transitionRule, 0, len(rules))
 	for {
-		badRulesIndices := selectBadRules(rules)
+		badRulesIndices := findBadRules(rules)
 		if badRulesIndices == nil || len(badRulesIndices) == 0 {
 			break
 		}
 		badRules = badRules[:0]
-		rulesBuffer = rulesBuffer[:0]
+		otherRules = otherRules[:0]
 		for i, j := 0, 0; i < len(rules); i++ {
 			if i != badRulesIndices[j] {
-				rulesBuffer = append(rulesBuffer, rules[i])
+				otherRules = append(otherRules, rules[i])
 			} else {
 				badRules = append(badRules, rules[i])
 				j++
 			}
 		}
-		rules = rulesBuffer
-
+		rules = otherRules
+		otherRules = determinateBadRules(badRules, otherRules)
+		rules = append(rules, otherRules...)
 	}
+	return rules
 }
 
-func selectBadRules(rules []transitionRule) []int {
+func findBadRules(rules []transitionRule) []int {
 	ruleIndices := make([]int, 0, len(rules))
 	for refIndex := 0; refIndex < len(rules)-1; refIndex++ {
 		refRule := rules[refIndex]
@@ -65,6 +67,6 @@ func selectBadRules(rules []transitionRule) []int {
 	return nil
 }
 
-func createDeterministicRules(rules []transitionRule) []transitionRule {
+func determinateBadRules(badRules, otherRules []transitionRule) []transitionRule {
 
 }
