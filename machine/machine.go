@@ -13,7 +13,8 @@ const (
 
 type finiteStateMachine struct {
 	isDeterministic bool
-	states          statesGraph
+	// TODO: try without struct statesGraph
+	states *statesGraph
 }
 
 func ReadFromFile(filename string) (*finiteStateMachine, error) {
@@ -23,13 +24,13 @@ func ReadFromFile(filename string) (*finiteStateMachine, error) {
 	}
 	oldLen := len(rules)
 	rules = determinateRules(rules)
-	result, err := createStatesGraph(rules)
+	states, err := createStatesGraph(rules)
 	if err != nil {
 		return nil, fmt.Errorf("machine creation error %e", err)
 	}
 	return &finiteStateMachine{
 		isDeterministic: oldLen == len(rules),
-		states:          *result,
+		states:          states,
 	}, nil
 
 }
