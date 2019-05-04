@@ -1,6 +1,9 @@
 package machine
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 const (
 	comma      = ','
@@ -20,7 +23,14 @@ func ReadFromFile(filename string) (*finiteStateMachine, error) {
 	}
 	oldLen := len(rules)
 	rules = determinateRules(rules)
-	isDeterministic := oldLen == len(rules)
+	result, err := createStatesTree(rules)
+	if err != nil {
+		return nil, fmt.Errorf("machine creation error %e", err)
+	}
+	return &finiteStateMachine{
+		isDeterministic: oldLen == len(rules),
+		startState:      *result,
+	}, nil
 
 }
 
