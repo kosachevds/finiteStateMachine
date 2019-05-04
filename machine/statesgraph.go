@@ -5,20 +5,20 @@ import (
 	"sort"
 )
 
-type machineState struct {
-	code        int
-	transitions map[rune]*machineState
+type statesGraph struct {
+	code int
+	ways map[rune]*statesGraph
 }
 
-func newMachineState(code int) *machineState {
-	return &machineState{code, make(map[rune]*machineState)}
+func newMachineState(code int) *statesGraph {
+	return &statesGraph{code, make(map[rune]*statesGraph)}
 }
 
-func createStatesTree(rules []transitionRule) (*machineState, error) {
+func createStatesGraph(rules []transitionRule) (*statesGraph, error) {
 	sort.Slice(rules, func(i, j int) bool {
 		return rules[i].beginState < rules[j].beginState
 	})
-	addedStates := make(map[int]*machineState)
+	addedStates := make(map[int]*statesGraph)
 	for i := 0; i < len(rules); i++ {
 		stateCode := rules[i].beginState
 		var j int
@@ -38,10 +38,10 @@ func createStatesTree(rules []transitionRule) (*machineState, error) {
 				nextState = newMachineState(stateCode)
 				addedStates[rule.nextState] = nextState
 			}
-			if _, ok = state.transitions[rule.symbol]; ok {
+			if _, ok = state.ways[rule.symbol]; ok {
 				return nil, fmt.Errorf("transition rules are not deterministic")
 			}
-			state.transitions[rule.symbol] = nextState
+			state.ways[rule.symbol] = nextState
 		}
 		i = j
 	}
