@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"path"
 	"strings"
 )
+
+// TODO: remade with interface (as os.FileInfo)
 
 type Manager struct {
 	fsm       *finiteStateMachine
@@ -21,9 +24,11 @@ func ReadDirMachines(dirname string) (*Manager, error) {
 	}
 	txtFiles := make([]string, 0, len(fileInfoArray))
 	for _, item := range fileInfoArray {
-		if strings.HasSuffix(item.Name(), machineFileExtension) {
-			txtFiles = append(txtFiles, item.Name())
+		if !strings.HasSuffix(item.Name(), machineFileExtension) {
+			continue
 		}
+		fullPath := path.Join(dirname, item.Name())
+		txtFiles = append(txtFiles, fullPath)
 	}
 	return &Manager{nil, txtFiles}, nil
 }
