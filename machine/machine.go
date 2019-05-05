@@ -64,10 +64,7 @@ func determinateRules(rules []transitionRule) []transitionRule {
 		otherRules = otherRules[:0]
 		j := 0
 		for i := 0; i < len(rules); i++ {
-			if j >= len(badRulesIndices) {
-				break
-			}
-			if i != badRulesIndices[j] {
+			if j >= len(badRulesIndices) || i != badRulesIndices[j] {
 				otherRules = append(otherRules, rules[i])
 			} else {
 				badRules = append(badRules, rules[i])
