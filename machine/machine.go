@@ -8,7 +8,6 @@ import (
 const (
 	comma      = ','
 	equalsSign = '='
-	finalSign  = '#'
 )
 
 type finiteStateMachine struct {
