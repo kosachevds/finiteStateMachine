@@ -47,6 +47,9 @@ func (mh *Manager) WriteMachinesList(writer io.Writer) error {
 }
 
 func (mh *Manager) InitMachineWithIndex(index int) error {
+	if index < 0 || index >= len(mh.filenames) {
+		return fmt.Errorf("invalid machine index")
+	}
 	fsm, err := ReadFromFile(mh.filenames[index])
 	if err != nil {
 		return fmt.Errorf("creating machine error: %v", err)
