@@ -18,17 +18,19 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Write index:")
-	index, err := scanIndex()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	index := 2
+	//fmt.Println("Write index:")
+	//index, err := scanIndex()
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
 	err = handler.InitMachineWithIndex(index)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("Welcome to the machine!")
 	for {
 		var input string
 		fmt.Scanln(&input)
