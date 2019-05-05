@@ -10,8 +10,6 @@ import (
 
 const commentMark = ";"
 
-// TODO: try with alias
-// or made with ruleParser
 type stateCodesMap struct {
 	codes map[string]int
 }
