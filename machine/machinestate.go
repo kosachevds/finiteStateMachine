@@ -38,9 +38,10 @@ func createStatesGraph(rules []transitionRule) (*machineState, error) {
 			addedStates[stateCode] = state
 		}
 		for _, rule := range rules[i:j] {
-			nextState, ok := addedStates[rule.nextState]
+			nextStateCode := rule.nextState
+			nextState, ok := addedStates[nextStateCode]
 			if !ok {
-				nextState = newMachineState(stateCode)
+				nextState = newMachineState(nextStateCode)
 				addedStates[rule.nextState] = nextState
 			}
 			if _, ok = state.ways[rule.symbol]; ok {
