@@ -17,6 +17,7 @@ type stateCodesMap struct {
 }
 
 type transitionRule struct {
+	// TODO: remade with field "isFinal" for uniting states
 	beginState int
 	symbol     rune
 	nextState  int
