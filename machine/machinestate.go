@@ -5,20 +5,20 @@ import (
 	"sort"
 )
 
-type statesGraph struct {
+type machineState struct {
 	code int
-	ways map[rune]*statesGraph
+	ways map[rune]*machineState
 }
 
-func newMachineState(code int) *statesGraph {
-	return &statesGraph{code, make(map[rune]*statesGraph)}
+func newMachineState(code int) *machineState {
+	return &machineState{false, code, make(map[rune]*machineState)}
 }
 
-func createStatesGraph(rules []transitionRule) (*statesGraph, error) {
+func createStatesGraph(rules []transitionRule) (*machineState, error) {
 	sort.Slice(rules, func(i, j int) bool {
 		return rules[i].beginState < rules[j].beginState
 	})
-	addedStates := make(map[int]*statesGraph)
+	addedStates := make(map[int]*machineState)
 	for i := 0; i < len(rules); i++ {
 		stateCode := rules[i].beginState
 		var j int

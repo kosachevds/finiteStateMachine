@@ -13,8 +13,8 @@ const (
 
 type finiteStateMachine struct {
 	isDeterministic bool
-	// TODO: try without struct statesGraph
-	states *statesGraph
+	// TODO: try without struct machineState
+	states *machineState
 }
 
 func ReadFromFile(filename string) (*finiteStateMachine, error) {
