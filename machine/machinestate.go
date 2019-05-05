@@ -10,8 +10,12 @@ type machineState struct {
 	ways map[rune]*machineState
 }
 
+func (ms *machineState) isFinal() bool {
+	return len(ms.ways) == 0
+}
+
 func newMachineState(code int) *machineState {
-	return &machineState{false, code, make(map[rune]*machineState)}
+	return &machineState{code, make(map[rune]*machineState)}
 }
 
 func createStatesGraph(rules []transitionRule) (*machineState, error) {
