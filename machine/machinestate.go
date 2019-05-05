@@ -6,8 +6,9 @@ import (
 )
 
 type machineState struct {
-	code int
-	ways map[rune]*machineState
+	isFinal bool
+	code    int
+	ways    map[rune]*machineState
 }
 
 func newMachineState(code int) *machineState {
