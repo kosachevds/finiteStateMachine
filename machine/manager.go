@@ -33,7 +33,7 @@ func (mh *Manager) WriteMachinesList(writer io.Writer) error {
 		return fmt.Errorf("empty machine handler or nil")
 	}
 	for i, name := range mh.filenames {
-		_, err := fmt.Fprintf(writer, "%d: %s", i, name)
+		_, err := fmt.Fprintf(writer, "%d: %s\n", i, name)
 		if err != nil {
 			return fmt.Errorf("writing machines error: %v", err)
 		}
