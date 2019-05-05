@@ -36,7 +36,19 @@ func ReadFromFile(filename string) (*finiteStateMachine, error) {
 }
 
 func (fsm *finiteStateMachine) IsCanHandle(input string) bool {
-
+	current := fsm.states
+	lastIndex := len(input) - 1
+	for i, item := range input {
+		nextState, ok := current.ways[item]
+		if !ok {
+			break
+		}
+		if i == lastIndex && !nextState.isFinal() {
+			return true
+		}
+		current = nextState
+	}
+	return false
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
