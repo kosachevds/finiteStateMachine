@@ -9,6 +9,7 @@ import (
 )
 
 const commentMark = ";"
+const finalStatePrefix = "f"
 
 type stateCodesMap struct {
 	codes map[string]int
@@ -16,9 +17,10 @@ type stateCodesMap struct {
 
 type transitionRule struct {
 	// TODO: remade with field "isFinal" for uniting states
-	beginState int
-	symbol     rune
-	nextState  int
+	beginState   int
+	symbol       rune
+	nextState    int
+	toFinalState bool
 }
 
 func (sc *stateCodesMap) getCode(stateName string) int {
@@ -50,9 +52,10 @@ func parseTransitionRule(rule string, stateCodes *stateCodesMap) (transitionRule
 	symbol, _ := utf8.DecodeRuneInString(rule[commaIndex+1 : commaIndex+2])
 
 	return transitionRule{
-		beginState: beginStateCode,
-		nextState:  nextStateCode,
-		symbol:     symbol,
+		beginState:   beginStateCode,
+		nextState:    nextStateCode,
+		symbol:       symbol,
+		toFinalState: strings.HasPrefix(nextStateName, finalStatePrefix),
 	}, nil
 }
 
