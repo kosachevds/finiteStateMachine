@@ -55,6 +55,7 @@ func (fsm *finiteStateMachine) IsCanHandle(input string) bool {
 func determinateRules(rules []transitionRule) []transitionRule {
 	badRules := make([]transitionRule, 0, len(rules))
 	otherRules := make([]transitionRule, 0, len(rules))
+	newStates := make(map[int]bool)
 	for {
 		badRulesIndices := findBadRules(rules)
 		if badRulesIndices == nil || len(badRulesIndices) == 0 {
@@ -71,7 +72,7 @@ func determinateRules(rules []transitionRule) []transitionRule {
 				j++
 			}
 		}
-		rules = determinateBadRules(badRules, otherRules)
+		rules = determinateBadRules(badRules, otherRules, newStates)
 	}
 	return rules
 }
@@ -96,16 +97,17 @@ func findBadRules(rules []transitionRule) []int {
 }
 
 // TODO badRules as struct {begin, symbol, ends}
-func determinateBadRules(badRules, otherRules []transitionRule) []transitionRule {
-	oldStates := getEndStates(badRules)
-	sort.Ints(oldStates)
-	newRules := make([]transitionRule, 0, len(badRules)+len(otherRules))
-	newRules = append(newRules, uniteBadRules(badRules))
-	newState := newRules[0].nextState
+func determinateBadRules(badRules, otherRules []transitionRule, newStates map[int]bool) []transitionRule {
+	unitedRule := uniteBadRules(badRules)
+	newState := unitedRule.nextState
+	newRules := otherRules
+	newRules = append(newRules, unitedRule)
+	if _, ok := newStates[newState]; ok {
+		return newRules
+	}
+	newStates[newState] = true
 	for _, rule := range otherRules {
-		if !isBadRuleNextState(rule.beginState, badRules) {
-			newRules = append(newRules, rule)
-		} else {
+		if isBadRuleNextState(rule.beginState, badRules) {
 			newRules = append(newRules, transitionRule{
 				beginState: newState,
 				symbol:     rule.symbol,
