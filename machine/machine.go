@@ -125,7 +125,7 @@ func isBadRuleNextState(state int, badRules []transitionRule) bool {
 }
 
 func uniteBadRules(rules []transitionRule) transitionRule {
-	// TODO: remade with count of states
+	// TODO: remade with count of states (but it will fail new states check)
 	statesToUnite := getEndStates(rules)
 	sort.Ints(statesToUnite)
 	newState := 0
@@ -133,7 +133,13 @@ func uniteBadRules(rules []transitionRule) transitionRule {
 		newState *= 10
 		newState += oldState
 	}
-	return transitionRule{rules[0].beginState, rules[0].symbol, newState}
+
+	return transitionRule{
+		beginState:   rules[0].beginState,
+		symbol:       rules[0].symbol,
+		nextState:    newState,
+		toFinalState: containsFinalRule(rules),
+	}
 }
 
 func getEndStates(rules []transitionRule) []int {
@@ -151,4 +157,13 @@ func appendIntWithoutRepeats(buffer []int, newItem int) []int {
 		}
 	}
 	return append(buffer, newItem)
+}
+
+func containsFinalRule(rules []transitionRule) bool {
+	for _, r := range rules {
+		if r.toFinalState {
+			return true
+		}
+	}
+	return false
 }
