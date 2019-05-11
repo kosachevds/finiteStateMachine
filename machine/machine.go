@@ -39,7 +39,7 @@ func (fsm *finiteStateMachine) IsCanHandle(input string) bool {
 		if !ok {
 			break
 		}
-		if i == lastIndex && !nextState.isFinal() {
+		if i == lastIndex && nextState.isFinal {
 			return true
 		}
 		current = nextState
