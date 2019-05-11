@@ -6,8 +6,9 @@ import (
 )
 
 type machineState struct {
-	code int
-	ways map[rune]*machineState
+	code    int
+	isFinal bool
+	ways    map[rune]*machineState
 }
 
 type allStatesSet struct {
@@ -15,11 +16,7 @@ type allStatesSet struct {
 }
 
 func newMachineState(code int) *machineState {
-	return &machineState{code, make(map[rune]*machineState)}
-}
-
-func (ms *machineState) isFinal() bool {
-	return len(ms.ways) == 0
+	return &machineState{code: code, isFinal: false, ways: make(map[rune]*machineState)}
 }
 
 func newStatesSet() *allStatesSet {
@@ -52,6 +49,9 @@ func createStatesGraph(rules []transitionRule) (*machineState, error) {
 		for _, rule := range rules[i:j] {
 			nextStateCode := rule.nextState
 			nextState := addedStates.get(nextStateCode)
+			if !nextState.isFinal && rule.toFinalState {
+				nextState.isFinal = true
+			}
 			if _, ok := state.ways[rule.symbol]; ok {
 				return nil, fmt.Errorf("transition rules are not deterministic")
 			}
