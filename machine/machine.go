@@ -106,9 +106,10 @@ func determinateBadRules(badRules, otherRules []transitionRule, newStates map[in
 	for _, rule := range otherRules {
 		if isBadRuleNextState(rule.beginState, badRules) {
 			newRules = append(newRules, transitionRule{
-				beginState: newState,
-				symbol:     rule.symbol,
-				nextState:  rule.nextState,
+				beginState:   newState,
+				symbol:       rule.symbol,
+				nextState:    rule.nextState,
+				toFinalState: rule.toFinalState,
 			})
 		}
 	}
