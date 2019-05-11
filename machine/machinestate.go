@@ -57,7 +57,7 @@ func createStatesGraph(rules []transitionRule) (*machineState, error) {
 			}
 			state.ways[rule.symbol] = nextState
 		}
-		i = j
+		i = j - 1
 	}
 	return addedStates.get(rules[0].beginState), nil
 }
