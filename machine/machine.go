@@ -69,9 +69,10 @@ func (sg *statesGraph) IsCanHandle(input string) bool {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func determinateRules(rules []transitionRule) []transitionRule {
+	maxCode := maxStateCode(rules)
 	badRules := make([]transitionRule, 0, len(rules))
 	otherRules := make([]transitionRule, 0, len(rules))
-	newStates := make(map[string]bool)
+	newStatesCodes := make(map[string]int)
 	for {
 		badRulesIndices := findBadRules(rules)
 		if badRulesIndices == nil || len(badRulesIndices) == 0 {
@@ -88,7 +89,8 @@ func determinateRules(rules []transitionRule) []transitionRule {
 				j++
 			}
 		}
-		rules = determinateBadRules(badRules, otherRules, newStates)
+		maxCode++
+		rules = determinateBadRules(badRules, otherRules, newStatesCodes, maxCode)
 	}
 	return rules
 }
@@ -113,8 +115,9 @@ func findBadRules(rules []transitionRule) []int {
 }
 
 // TODO badRules as struct {begin, symbol, ends}
-func determinateBadRules(badRules, otherRules []transitionRule, newStates map[string]bool) []transitionRule {
+func determinateBadRules(badRules, otherRules []transitionRule, newStates map[string]int, newCode int) []transitionRule {
 	unitedRule := uniteBadRules(badRules)
+	//unitedRule.nextState = newCode
 	newStateName := uniteEndStateNames(badRules)
 	newState := unitedRule.nextState
 	newRules := otherRules
@@ -122,7 +125,7 @@ func determinateBadRules(badRules, otherRules []transitionRule, newStates map[st
 	if _, ok := newStates[newStateName]; ok {
 		return newRules
 	}
-	newStates[newStateName] = true
+	newStates[newStateName] = newState
 	for _, rule := range otherRules {
 		if isBadRuleNextState(rule.beginState, badRules) {
 			newRules = append(newRules, transitionRule{
@@ -198,10 +201,12 @@ func containsFinalRule(rules []transitionRule) bool {
 	return false
 }
 
-func countStates(rules []transitionRule) int {
-	codes := make(map[int]bool)
+func maxStateCode(rules []transitionRule) int {
+	maxCode := 0
 	for _, rule := range rules {
-		codes[rule.beginState] = true
+		if rule.nextState > maxCode {
+			maxCode = rule.nextState
+		}
 	}
-	return len(codes)
+	return maxCode
 }
