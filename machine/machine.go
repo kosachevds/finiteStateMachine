@@ -197,3 +197,11 @@ func containsFinalRule(rules []transitionRule) bool {
 	}
 	return false
 }
+
+func countStates(rules []transitionRule) int {
+	codes := make(map[int]bool)
+	for _, rule := range rules {
+		codes[rule.beginState] = true
+	}
+	return len(codes)
+}
