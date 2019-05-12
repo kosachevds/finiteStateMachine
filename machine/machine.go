@@ -2,20 +2,28 @@ package machine
 
 import (
 	"fmt"
+	"io/ioutil"
+	"path"
 	"sort"
+	"strings"
 )
 
 const (
-	comma      = ','
-	equalsSign = '='
+	comma                = ','
+	equalsSign           = '='
+	machineFileExtension = ".txt"
 )
+
+type FiniteStateMachine interface {
+	IsCanHandle(string) bool
+}
 
 type finiteStateMachine struct {
 	// TODO: try without struct machineState
 	states *machineState
 }
 
-func ReadFromFile(filename string) (*finiteStateMachine, error) {
+func ReadFromFile(filename string) (FiniteStateMachine, error) {
 	rules, err := readRules(filename)
 	if err != nil {
 		return nil, err
@@ -29,6 +37,22 @@ func ReadFromFile(filename string) (*finiteStateMachine, error) {
 		states: states,
 	}, nil
 
+}
+
+func ReadDirMachines(dirname string) ([]string, error) {
+	fileInfoArray, err := ioutil.ReadDir(dirname)
+	if err != nil {
+		return nil, fmt.Errorf("reading directory error %v", err)
+	}
+	txtFiles := make([]string, 0, len(fileInfoArray))
+	for _, item := range fileInfoArray {
+		if !strings.HasSuffix(item.Name(), machineFileExtension) {
+			continue
+		}
+		fullPath := path.Join(dirname, item.Name())
+		txtFiles = append(txtFiles, fullPath)
+	}
+	return txtFiles, nil
 }
 
 func (fsm *finiteStateMachine) IsCanHandle(input string) bool {
