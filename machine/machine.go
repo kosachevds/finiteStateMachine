@@ -18,9 +18,8 @@ type FiniteStateMachine interface {
 	IsCanHandle(string) bool
 }
 
-type finiteStateMachine struct {
-	// TODO: try without struct machineState
-	states *machineState
+type statesGraph struct {
+	root *machineState
 }
 
 func ReadFromFile(filename string) (FiniteStateMachine, error) {
@@ -33,8 +32,8 @@ func ReadFromFile(filename string) (FiniteStateMachine, error) {
 	if err != nil {
 		return nil, fmt.Errorf("machine creation error %e", err)
 	}
-	return &finiteStateMachine{
-		states: states,
+	return &statesGraph{
+		root: states,
 	}, nil
 
 }
@@ -55,8 +54,8 @@ func ReadDirMachines(dirname string) ([]string, error) {
 	return txtFiles, nil
 }
 
-func (fsm *finiteStateMachine) IsCanHandle(input string) bool {
-	current := fsm.states
+func (sg *statesGraph) IsCanHandle(input string) bool {
+	current := sg.root
 	lastIndex := len(input) - 1
 	for i, item := range input {
 		nextState, ok := current.ways[item]
@@ -150,7 +149,7 @@ func isBadRuleNextState(state int, badRules []transitionRule) bool {
 }
 
 func uniteBadRules(rules []transitionRule) transitionRule {
-	// TODO: remade with count of states (but it will fail new states check)
+	// TODO: remade with count of root (but it will fail new root check)
 	statesToUnite := getEndStates(rules)
 	sort.Ints(statesToUnite)
 	newState := 0
