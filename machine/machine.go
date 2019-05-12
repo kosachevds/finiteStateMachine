@@ -71,7 +71,7 @@ func (sg *statesGraph) IsCanHandle(input string) bool {
 func determinateRules(rules []transitionRule) []transitionRule {
 	badRules := make([]transitionRule, 0, len(rules))
 	otherRules := make([]transitionRule, 0, len(rules))
-	newStates := make(map[int]bool)
+	newStates := make(map[string]bool)
 	for {
 		badRulesIndices := findBadRules(rules)
 		if badRulesIndices == nil || len(badRulesIndices) == 0 {
@@ -113,15 +113,16 @@ func findBadRules(rules []transitionRule) []int {
 }
 
 // TODO badRules as struct {begin, symbol, ends}
-func determinateBadRules(badRules, otherRules []transitionRule, newStates map[int]bool) []transitionRule {
+func determinateBadRules(badRules, otherRules []transitionRule, newStates map[string]bool) []transitionRule {
 	unitedRule := uniteBadRules(badRules)
+	newStateName := uniteEndStateNames(badRules)
 	newState := unitedRule.nextState
 	newRules := otherRules
 	newRules = append(newRules, unitedRule)
-	if _, ok := newStates[newState]; ok {
+	if _, ok := newStates[newStateName]; ok {
 		return newRules
 	}
-	newStates[newState] = true
+	newStates[newStateName] = true
 	for _, rule := range otherRules {
 		if isBadRuleNextState(rule.beginState, badRules) {
 			newRules = append(newRules, transitionRule{
@@ -142,6 +143,15 @@ func isBadRuleNextState(state int, badRules []transitionRule) bool {
 		}
 	}
 	return false
+}
+
+func uniteEndStateNames(rules []transitionRule) string {
+	endStates := getEndStates(rules)
+	sort.Ints(endStates)
+	unitedName := fmt.Sprint(endStates)
+	unitedName = strings.Join(strings.Fields(unitedName), "")
+	unitedName = strings.Trim(unitedName, "[]")
+	return unitedName
 }
 
 func uniteBadRules(rules []transitionRule) transitionRule {
