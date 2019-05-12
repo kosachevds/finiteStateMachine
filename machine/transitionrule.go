@@ -66,20 +66,15 @@ func readRules(filename string) ([]transitionRule, error) {
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
-	stateCodes := newStateCodesMap()
 	lines := make(chan string)
 	go fillRuleLinesChannel(scanner, lines, func(line string) bool {
 		return line != "" && !strings.HasPrefix(line, commentMark)
 	})
-	var rules []transitionRule
-	for line := range lines {
-		newRule, err := parseTransitionRule(line, stateCodes)
-		if err != nil {
-			return nil, err
-		}
-		rules = append(rules, newRule)
+	rules, err := createRules(lines)
+	if err != nil {
+		return nil, err
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		return nil, scanner.Err()
 	}
 	return rules, nil
@@ -94,4 +89,17 @@ func fillRuleLinesChannel(scanner *bufio.Scanner, lines chan string, predicate f
 		lines <- line
 	}
 	close(lines)
+}
+
+func createRules(lines chan string) ([]transitionRule, error) {
+	stateCodes := newStateCodesMap()
+	var rules []transitionRule
+	for line := range lines {
+		newRule, err := parseTransitionRule(line, stateCodes)
+		if err != nil {
+			return nil, err
+		}
+		rules = append(rules, newRule)
+	}
+	return rules, nil
 }
