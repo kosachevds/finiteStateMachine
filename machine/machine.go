@@ -8,11 +8,7 @@ import (
 	"strings"
 )
 
-const (
-	comma                = ','
-	equalsSign           = '='
-	machineFileExtension = ".txt"
-)
+const machineFileExtension = ".txt"
 
 type FiniteStateMachine interface {
 	IsCanHandle(string) bool

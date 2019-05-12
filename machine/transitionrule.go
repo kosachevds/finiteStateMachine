@@ -8,8 +8,12 @@ import (
 	"unicode/utf8"
 )
 
-const commentMark = ";"
-const finalStatePrefix = "f"
+const (
+	comma            = ','
+	equalsSign       = '='
+	commentMark      = ";"
+	finalStatePrefix = "f"
+)
 
 type stateCodesMap struct {
 	codes map[string]int
