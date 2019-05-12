@@ -61,19 +61,18 @@ func parseTransitionRule(rule string, stateCodes *stateCodesMap) (transitionRule
 
 func readRules(filename string) ([]transitionRule, error) {
 	file, err := os.Open(filename)
-	defer file.Close()
 	if err != nil {
 		return nil, err
 	}
-	var rules []transitionRule
+	defer file.Close()
 	scanner := bufio.NewScanner(file)
-	// TODO: with goroutine
 	stateCodes := newStateCodesMap()
-	for scanner.Scan() {
-		line := strings.ToLower(scanner.Text())
-		if line == "" || strings.HasPrefix(line, commentMark) {
-			continue
-		}
+	lines := make(chan string)
+	go fillRuleLinesChannel(scanner, lines, func(line string) bool {
+		return line != "" && !strings.HasPrefix(line, commentMark)
+	})
+	var rules []transitionRule
+	for line := range lines {
 		newRule, err := parseTransitionRule(line, stateCodes)
 		if err != nil {
 			return nil, err
@@ -84,4 +83,15 @@ func readRules(filename string) ([]transitionRule, error) {
 		return nil, scanner.Err()
 	}
 	return rules, nil
+}
+
+func fillRuleLinesChannel(scanner *bufio.Scanner, lines chan string, predicate func(string) bool) {
+	for scanner.Scan() {
+		line := strings.ToLower(scanner.Text())
+		if predicate != nil && !predicate(line) {
+			continue
+		}
+		lines <- line
+	}
+	close(lines)
 }
