@@ -45,10 +45,9 @@ func (codes *unitedStatesCodes) add(state unitedState) {
 }
 
 func determinateRules(rules []transitionRule) []transitionRule {
-	maxCode := maxStateCode(rules)
 	badRules := make([]transitionRule, 0, len(rules))
 	otherRules := make([]transitionRule, 0, len(rules))
-	newStatesCodes := newUnitedStatesCodes(maxCode + 1)
+	newStatesCodes := newUnitedStatesCodes(maxStateCode(rules) + 1)
 	for {
 		badRulesIndices := findBadRules(rules)
 		if badRulesIndices == nil || len(badRulesIndices) == 0 {
@@ -65,7 +64,6 @@ func determinateRules(rules []transitionRule) []transitionRule {
 				j++
 			}
 		}
-		maxCode++
 		rules = determinateBadRules(badRules, otherRules, newStatesCodes)
 	}
 	return rules
@@ -102,11 +100,15 @@ func findBadRules(rules []transitionRule) []int {
 
 // TODO badRules as struct {begin, symbol, ends}
 func determinateBadRules(badRules, otherRules []transitionRule, codes *unitedStatesCodes) []transitionRule {
-	unitedRule := uniteBadRules(badRules)
 	newStateName := uniteEndStates(badRules)
 	newRules := otherRules
 	isOldState := codes.isContains(newStateName)
-	unitedRule.nextState = codes.get(newStateName)
+	unitedRule := transitionRule{
+		beginState:   badRules[0].beginState,
+		symbol:       badRules[0].symbol,
+		nextState:    codes.get(newStateName),
+		toFinalState: containsFinalRule(badRules),
+	}
 	newRules = append(newRules, unitedRule)
 	if isOldState {
 		return newRules
