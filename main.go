@@ -31,12 +31,12 @@ func main() {
 	}
 	if index == 2 {
 		if checkIndex2(fsm) {
-			fmt.Println("Good 2nd fsm!")
+			fmt.Println("Good 2nd machine!")
 		} else {
-			fmt.Println("Bad 2nd fsm!")
+			fmt.Println("Bad 2nd machine!")
 		}
 	}
-	fmt.Println("Welcome to the fsm!")
+	fmt.Println("Welcome to the machine!")
 	for {
 		var input string
 		fmt.Scanln(&input)
