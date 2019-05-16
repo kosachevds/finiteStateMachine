@@ -20,28 +20,14 @@ func newUnitedStatesCodes(firstCode int) *unitedStatesCodes {
 	}
 }
 
-func (codes *unitedStatesCodes) get(state unitedState) int {
-	stateCode, ok := codes.existsCodes[state]
-	if ok {
-		return stateCode
+func (codes *unitedStatesCodes) get(state unitedState) (stateCode int, isOld bool) {
+	stateCode, isOld = codes.existsCodes[state]
+	if !isOld {
+		stateCode = codes.newCode
+		codes.existsCodes[state] = stateCode
+		codes.newCode++
 	}
-	stateCode = codes.newCode
-	codes.existsCodes[state] = stateCode
-	codes.newCode++
-	return stateCode
-}
-
-func (codes *unitedStatesCodes) isContains(state unitedState) bool {
-	_, ok := codes.existsCodes[state]
-	return ok
-}
-
-func (codes *unitedStatesCodes) add(state unitedState) {
-	if codes.isContains(state) {
-		return
-	}
-	codes.existsCodes[state] = codes.newCode
-	codes.newCode++
+	return stateCode, isOld
 }
 
 func determinateRules(rules []transitionRule) []transitionRule {
@@ -102,18 +88,17 @@ func findBadRules(rules []transitionRule) []int {
 func determinateBadRules(badRules, otherRules []transitionRule, codes *unitedStatesCodes) []transitionRule {
 	newStateName := uniteEndStates(badRules)
 	newRules := otherRules
-	isOldState := codes.isContains(newStateName)
+	newStateCode, isOldState := codes.get(newStateName)
 	unitedRule := transitionRule{
 		beginState:   badRules[0].beginState,
 		symbol:       badRules[0].symbol,
-		nextState:    codes.get(newStateName),
+		nextState:    newStateCode,
 		toFinalState: containsFinalRule(badRules),
 	}
 	newRules = append(newRules, unitedRule)
 	if isOldState {
 		return newRules
 	}
-	codes.add(newStateName)
 	for _, rule := range otherRules {
 		if isBadRuleNextState(rule.beginState, badRules) {
 			newRules = append(newRules, transitionRule{
