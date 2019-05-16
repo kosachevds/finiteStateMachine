@@ -20,9 +20,15 @@ func newUnitedStatesCodes(firstCode int) *unitedStatesCodes {
 	}
 }
 
-func (codes *unitedStatesCodes) get(state unitedState) (int, bool) {
-	item, ok := codes.existsCodes[state]
-	return item, ok
+func (codes *unitedStatesCodes) get(state unitedState) int {
+	stateCode, ok := codes.existsCodes[state]
+	if ok {
+		return stateCode
+	}
+	stateCode = codes.newCode
+	codes.existsCodes[state] = stateCode
+	codes.newCode++
+	return stateCode
 }
 
 func (codes *unitedStatesCodes) isContains(state unitedState) bool {
@@ -31,7 +37,7 @@ func (codes *unitedStatesCodes) isContains(state unitedState) bool {
 }
 
 func (codes *unitedStatesCodes) add(state unitedState) {
-	if _, ok := codes.get(state); ok {
+	if codes.isContains(state) {
 		return
 	}
 	codes.existsCodes[state] = codes.newCode
@@ -99,8 +105,10 @@ func determinateBadRules(badRules, otherRules []transitionRule, codes *unitedSta
 	unitedRule := uniteBadRules(badRules)
 	newStateName := uniteEndStates(badRules)
 	newRules := otherRules
+	isOldState := codes.isContains(newStateName)
+	unitedRule.nextState = codes.get(newStateName)
 	newRules = append(newRules, unitedRule)
-	if codes.isContains(newStateName) {
+	if isOldState {
 		return newRules
 	}
 	codes.add(newStateName)
