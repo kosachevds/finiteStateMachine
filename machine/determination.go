@@ -6,11 +6,13 @@ import (
 	"strings"
 )
 
+type unitedState string
+
 func determinateRules(rules []transitionRule) []transitionRule {
 	maxCode := maxStateCode(rules)
 	badRules := make([]transitionRule, 0, len(rules))
 	otherRules := make([]transitionRule, 0, len(rules))
-	newStatesCodes := make(map[string]int)
+	newStatesCodes := make(map[unitedState]int)
 	for {
 		badRulesIndices := findBadRules(rules)
 		if badRulesIndices == nil || len(badRulesIndices) == 0 {
@@ -63,10 +65,10 @@ func findBadRules(rules []transitionRule) []int {
 }
 
 // TODO badRules as struct {begin, symbol, ends}
-func determinateBadRules(badRules, otherRules []transitionRule, newStates map[string]int, newCode int) []transitionRule {
+func determinateBadRules(badRules, otherRules []transitionRule, newStates map[unitedState]int, newCode int) []transitionRule {
 	unitedRule := uniteBadRules(badRules)
 	//unitedRule.nextState = newCode
-	newStateName := uniteEndStateNames(badRules)
+	newStateName := uniteEndStates(badRules)
 	newState := unitedRule.nextState
 	newRules := otherRules
 	newRules = append(newRules, unitedRule)
@@ -96,13 +98,13 @@ func isBadRuleNextState(state int, badRules []transitionRule) bool {
 	return false
 }
 
-func uniteEndStateNames(rules []transitionRule) string {
+func uniteEndStates(rules []transitionRule) unitedState {
 	endStates := getEndStates(rules)
 	sort.Ints(endStates)
 	unitedName := fmt.Sprint(endStates)
 	unitedName = strings.Join(strings.Fields(unitedName), "")
 	unitedName = strings.Trim(unitedName, "[]")
-	return unitedName
+	return unitedState(unitedName)
 }
 
 func uniteBadRules(rules []transitionRule) transitionRule {
