@@ -8,11 +8,36 @@ import (
 
 type unitedState string
 
+type unitedStatesCodes struct {
+	newCode     int
+	existsCodes map[unitedState]int
+}
+
+func newUnitedStatesCodes(firstCode int) *unitedStatesCodes {
+	return &unitedStatesCodes{
+		newCode:     firstCode,
+		existsCodes: make(map[unitedState]int),
+	}
+}
+
+func (codes *unitedStatesCodes) get(state unitedState) (int, bool) {
+	item, ok := codes.existsCodes[state]
+	return item, ok
+}
+
+func (codes *unitedStatesCodes) add(state unitedState) {
+	if _, ok := codes.get(state); ok {
+		return
+	}
+	codes.existsCodes[state] = codes.newCode
+	codes.newCode++
+}
+
 func determinateRules(rules []transitionRule) []transitionRule {
 	maxCode := maxStateCode(rules)
 	badRules := make([]transitionRule, 0, len(rules))
 	otherRules := make([]transitionRule, 0, len(rules))
-	newStatesCodes := make(map[unitedState]int)
+	newStatesCodes := newUnitedStatesCodes(maxCode + 1)
 	for {
 		badRulesIndices := findBadRules(rules)
 		if badRulesIndices == nil || len(badRulesIndices) == 0 {
@@ -30,7 +55,7 @@ func determinateRules(rules []transitionRule) []transitionRule {
 			}
 		}
 		maxCode++
-		rules = determinateBadRules(badRules, otherRules, newStatesCodes, maxCode)
+		rules = determinateBadRules(badRules, otherRules, newStatesCodes)
 	}
 	return rules
 }
@@ -65,17 +90,17 @@ func findBadRules(rules []transitionRule) []int {
 }
 
 // TODO badRules as struct {begin, symbol, ends}
-func determinateBadRules(badRules, otherRules []transitionRule, newStates map[unitedState]int, newCode int) []transitionRule {
+func determinateBadRules(badRules, otherRules []transitionRule, codes *unitedStatesCodes) []transitionRule {
 	unitedRule := uniteBadRules(badRules)
 	//unitedRule.nextState = newCode
 	newStateName := uniteEndStates(badRules)
 	newState := unitedRule.nextState
 	newRules := otherRules
 	newRules = append(newRules, unitedRule)
-	if _, ok := newStates[newStateName]; ok {
+	if _, ok := codes.get(newStateName); ok {
 		return newRules
 	}
-	newStates[newStateName] = newState
+	codes.add(newStateName)
 	for _, rule := range otherRules {
 		if isBadRuleNextState(rule.beginState, badRules) {
 			newRules = append(newRules, transitionRule{
