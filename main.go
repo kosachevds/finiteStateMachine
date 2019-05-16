@@ -24,16 +24,23 @@ func main() {
 	//	fmt.Println(err)
 	//	return
 	//}
-	machine, err := machine.ReadFromFile(files[index])
+	fsm, err := machine.ReadFromFile(files[index])
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Welcome to the machine!")
+	if index == 2 {
+		if checkIndex2(fsm) {
+			fmt.Println("Good 2nd fsm!")
+		} else {
+			fmt.Println("Bad 2nd fsm!")
+		}
+	}
+	fmt.Println("Welcome to the fsm!")
 	for {
 		var input string
 		fmt.Scanln(&input)
-		fmt.Println(machine.IsCanHandle(input))
+		fmt.Println(fsm.IsCanHandle(input))
 	}
 }
 
@@ -51,4 +58,24 @@ func printStrings(filenames []string, delimiter string) error {
 		}
 	}
 	return nil
+}
+
+func checkIndex2(fsm machine.FiniteStateMachine) bool {
+	inputs := [...]string{
+		"acdaf",
+		"acdd",
+		"ae",
+		"aeb",
+		"ab",
+		"acf",
+		"adaf",
+		"add",
+		"abf",
+	}
+	for _, input := range inputs {
+		if !fsm.IsCanHandle(input) {
+			return false
+		}
+	}
+	return true
 }
