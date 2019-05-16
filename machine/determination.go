@@ -25,6 +25,11 @@ func (codes *unitedStatesCodes) get(state unitedState) (int, bool) {
 	return item, ok
 }
 
+func (codes *unitedStatesCodes) isContains(state unitedState) bool {
+	_, ok := codes.existsCodes[state]
+	return ok
+}
+
 func (codes *unitedStatesCodes) add(state unitedState) {
 	if _, ok := codes.get(state); ok {
 		return
@@ -92,19 +97,17 @@ func findBadRules(rules []transitionRule) []int {
 // TODO badRules as struct {begin, symbol, ends}
 func determinateBadRules(badRules, otherRules []transitionRule, codes *unitedStatesCodes) []transitionRule {
 	unitedRule := uniteBadRules(badRules)
-	//unitedRule.nextState = newCode
 	newStateName := uniteEndStates(badRules)
-	newState := unitedRule.nextState
 	newRules := otherRules
 	newRules = append(newRules, unitedRule)
-	if _, ok := codes.get(newStateName); ok {
+	if codes.isContains(newStateName) {
 		return newRules
 	}
 	codes.add(newStateName)
 	for _, rule := range otherRules {
 		if isBadRuleNextState(rule.beginState, badRules) {
 			newRules = append(newRules, transitionRule{
-				beginState:   newState,
+				beginState:   unitedRule.nextState,
 				symbol:       rule.symbol,
 				nextState:    rule.nextState,
 				toFinalState: rule.toFinalState,
