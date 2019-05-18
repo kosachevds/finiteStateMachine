@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// TODO: remade with slice
 type unitedState string
 
 type unitedStatesCodes struct {
@@ -128,24 +129,6 @@ func uniteEndStates(rules []transitionRule) unitedState {
 	unitedName = strings.Join(strings.Fields(unitedName), "")
 	unitedName = strings.Trim(unitedName, "[]")
 	return unitedState(unitedName)
-}
-
-func uniteBadRules(rules []transitionRule) transitionRule {
-	// TODO: remade with count of root (but it will fail new root check)
-	statesToUnite := getEndStates(rules)
-	sort.Ints(statesToUnite)
-	newState := 0
-	for _, oldState := range statesToUnite {
-		newState *= 10
-		newState += oldState
-	}
-
-	return transitionRule{
-		beginState:   rules[0].beginState,
-		symbol:       rules[0].symbol,
-		nextState:    newState,
-		toFinalState: containsFinalRule(rules),
-	}
 }
 
 func getEndStates(rules []transitionRule) []int {
