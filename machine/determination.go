@@ -110,6 +110,14 @@ func determinateBadRules(badRules, otherRules []transitionRule, codes *unitedSta
 			})
 		}
 	}
+	for _, rule := range badRules {
+		if !rule.isLoop() {
+			continue
+		}
+		rule.beginState = newStateCode
+		rule.nextState = newStateCode
+		newRules = append(newRules, rule)
+	}
 	return newRules
 }
 
