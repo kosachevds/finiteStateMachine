@@ -6,6 +6,8 @@ import (
 	"strconv"
 )
 
+const testMachineIndex = 2
+
 func main() {
 	files, err := machine.ReadDirMachines("./data")
 	if err != nil {
@@ -17,23 +19,23 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	index := 2
-	//fmt.Println("Write index:")
-	//index, err := scanIndex()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
+	//index := 2
+	fmt.Println("Write index:")
+	index, err := scanIndex()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	fsm, err := machine.ReadFromFile(files[index])
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	if index == 2 {
-		if checkIndex2(fsm) {
-			fmt.Println("Good 2nd machine!")
+	if index == testMachineIndex {
+		if checkPredefinedMachine(fsm) {
+			fmt.Println("Good predefined machine!")
 		} else {
-			fmt.Println("Bad 2nd machine!")
+			fmt.Println("Bad predefined machine!")
 		}
 	}
 	fmt.Println("Welcome to the machine!")
@@ -60,7 +62,8 @@ func printStrings(filenames []string, delimiter string) error {
 	return nil
 }
 
-func checkIndex2(fsm machine.FiniteStateMachine) bool {
+func checkPredefinedMachine(fsm machine.FiniteStateMachine) bool {
+	// TODO: unit-tests
 	inputs := [...]string{
 		"acdaf",
 		"acdd",

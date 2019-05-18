@@ -1,5 +1,7 @@
 package machine
 
+// TODO: method CreateFromLines
+
 import (
 	"bufio"
 	"fmt"
