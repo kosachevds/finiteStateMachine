@@ -26,6 +26,10 @@ type transitionRule struct {
 	toFinalState bool
 }
 
+func (rule *transitionRule) isLoop() bool {
+	return rule.beginState == rule.nextState
+}
+
 func (sc *stateCodesMap) getCode(stateName string) int {
 	code, ok := sc.codes[stateName]
 	if !ok {
