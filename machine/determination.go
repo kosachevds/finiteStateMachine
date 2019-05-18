@@ -43,11 +43,11 @@ func determinateRules(rules []transitionRule) []transitionRule {
 		badRules = badRules[:0]
 		otherRules = otherRules[:0]
 		j := 0
-		for i := range rules {
+		for i, rule := range rules {
 			if j >= len(badRulesIndices) || i != badRulesIndices[j] {
-				otherRules = append(otherRules, rules[i])
+				otherRules = append(otherRules, rule)
 			} else {
-				badRules = append(badRules, rules[i])
+				badRules = append(badRules, rule)
 				j++
 			}
 		}
@@ -85,7 +85,7 @@ func findBadRules(rules []transitionRule) []int {
 	return nil
 }
 
-// TODO badRules as struct {begin, symbol, ends}
+// TODO remade with badRulesIndices
 func determinateBadRules(badRules, otherRules []transitionRule, codes *unitedStatesCodes) []transitionRule {
 	newStateName := uniteEndStates(badRules)
 	newRules := otherRules
